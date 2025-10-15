@@ -90,3 +90,40 @@ oc version
 
 echo
 echo "✅ Kubernetes & OpenShift CLIs successfully configured!"
+echo
+echo "=== Step 9: Install and Start Minikube (Local Kubernetes Cluster) ==="
+
+# Install Minikube if not already present
+if ! command -v minikube &> /dev/null; then
+  echo "➡️ Installing Minikube..."
+  curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+  sudo install minikube-linux-amd64 /usr/local/bin/minikube
+  rm -f minikube-linux-amd64
+  echo "✅ Minikube installed successfully:"
+  minikube version
+else
+  echo "✅ Minikube already installed, skipping."
+fi
+
+# Start Minikube with Docker driver
+echo
+echo "➡️ Starting Minikube cluster using Docker driver..."
+minikube start --driver=docker --force-systemd=true --memory=2048 --cpus=2 || {
+  echo "❌ Failed to start Minikube. Check Docker service or available memory."
+  exit 1
+}
+
+# Verify cluster is up
+echo
+echo "✅ Verifying Kubernetes cluster..."
+kubectl get nodes -o wide || echo "⚠️ Could not list nodes yet."
+kubectl cluster-info || echo "⚠️ Cluster info not available yet."
+
+# Save info
+mkdir -p ~/cluster-verification
+kubectl get nodes -o wide > ~/cluster-verification/nodes.txt 2>&1 || true
+kubectl cluster-info > ~/cluster-verification/cluster-info.txt 2>&1 || true
+echo "✅ Cluster verification data saved in ~/cluster-verification/"
+
+echo
+echo "✅ Minikube Kubernetes cluster setup complete!"
