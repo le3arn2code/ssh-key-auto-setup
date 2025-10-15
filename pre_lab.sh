@@ -69,3 +69,24 @@ echo "=== Step 7: Final Verification ==="
 docker info || echo "⚠️ Docker info check skipped or requires re-login."
 echo
 echo "✅ CentOS 7 Lab Environment Setup Complete!"
+echo
+echo "=== Step 8: Installing kubectl and OpenShift oc CLI ==="
+
+# Kubernetes CLI (kubectl)
+K8S_VERSION=v1.28.0
+sudo curl -LO "https://dl.k8s.io/release/${K8S_VERSION}/bin/linux/amd64/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+rm -f kubectl
+echo "✅ kubectl installed:"
+kubectl version --client
+
+# OpenShift CLI (oc)
+OC_VERSION=4.14.17
+curl -L "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OC_VERSION}/openshift-client-linux-${OC_VERSION}.tar.gz" -o oc.tar.gz
+sudo tar -xvf oc.tar.gz -C /usr/local/bin/ oc kubectl
+rm -f oc.tar.gz
+echo "✅ oc (OpenShift CLI) installed:"
+oc version
+
+echo
+echo "✅ Kubernetes & OpenShift CLIs successfully configured!"
